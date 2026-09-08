@@ -1,0 +1,21 @@
+{
+  "name": "credlens-ai",
+  "version": "1.0.0",
+  "description": "**AI-powered trust scoring on Creditcoin using Attestcoin-verified cross-chain data**",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OxTEJIRI/CredLens-AI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/OxTEJIRI/CredLens-AI/issues"
+  },
+  "homepage": "https://github.com/OxTEJIRI/CredLens-AI#readme"
+}
