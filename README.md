@@ -165,6 +165,10 @@ Additional technical documentation will be added in `docs/`, including:
 - Testnet deployment: _To be added_
 - Repository: _This repository_
 
+## Current Status
+Stage 1 is complete: CredLens AI can take a real Ethereum Sepolia transaction hash, generate an Attestcoin proof with the USC SDK, and verify that proof on Creditcoin CC3 Testnet. The verification script currently prints VERIFIED for a valid attested transaction, confirming the proof-of-verification flow works end to end.
+
+
 ## Notes
 
 This README is the project foundation and will be updated as development progresses.
