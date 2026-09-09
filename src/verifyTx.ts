@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import { ethers } from 'ethers';
 import { chainInfo, blockProver, proofProvider } from '@gluwa/usc-sdk';
-import { normalizeVerifiedData, scoreWallet } from './scoreWallet';
+import { normalizeVerifiedData, scoreWallet } from './scoreWallet.js';
+import { storeScoreOnChain } from './registry.js';
 
 type VerifiedTx = {
   walletAddress: string;
@@ -52,6 +53,7 @@ function buildVerifiedWalletSummary(transactions: VerifiedTx[]) {
   }
 
   const earliestTxTime = new Date(earliest.timestampIso).getTime();
+
   const walletAgeDays = Math.max(
     0,
     Math.floor((now.getTime() - earliestTxTime) / (24 * 60 * 60 * 1000))
@@ -67,7 +69,6 @@ function buildVerifiedWalletSummary(transactions: VerifiedTx[]) {
 
   const totalTxCount = transactions.length;
   const txCount30d = recentTransactions.length;
-
   const totalValueEth = transactions.reduce((sum, tx) => sum + tx.valueEth, 0);
   const avgTxValueEth = totalTxCount > 0 ? totalValueEth / totalTxCount : 0;
 
@@ -94,6 +95,10 @@ async function main() {
   if (!proverUrl) throw new Error('Missing PROVER_URL in .env');
   if (!sepoliaTxHash) throw new Error('Missing SEPOLIA_TX_HASH in .env');
 
+  if (!process.env.CREDLENS_REGISTRY_ADDRESS) {
+    throw new Error('Missing CREDLENS_REGISTRY_ADDRESS in .env');
+  }
+
   if (!ethers.isHexString(sepoliaTxHash, 32)) {
     throw new Error('SEPOLIA_TX_HASH is not a valid 32-byte transaction hash');
   }
@@ -104,9 +109,13 @@ async function main() {
   const creditcoinProvider = new ethers.JsonRpcProvider(cc3RpcUrl);
 
   const chainInfoProvider = new chainInfo.PrecompileChainInfoProvider(
-    creditcoinProvider
+    creditcoinProvider as any
   );
-  const prover = new blockProver.PrecompileBlockProver(creditcoinProvider);
+
+  const prover = new blockProver.PrecompileBlockProver(
+    creditcoinProvider as any
+  );
+
   const proofBuilder = new proofProvider.service.ProofBuilder(
     chainKey,
     proverUrl
@@ -136,7 +145,7 @@ async function main() {
   console.log('To:', tx.to);
 
   console.log('Waiting for block attestation on CC3...');
-  await proofBuilder.waitUntilHeightAttested(chainKey, tx.blockNumber);
+  await chainInfoProvider.waitUntilHeightAttested(chainKey, tx.blockNumber);
 
   console.log('Requesting proof from prover...');
   const result = await proofBuilder.getProof(sepoliaTxHash);
@@ -145,8 +154,13 @@ async function main() {
     throw new Error(`Proof generation failed: ${result.error}`);
   }
 
-  const { chainKey: ck, headerNumber, txBytes, merkleProof, continuityProof } =
-    result.data;
+  const {
+    chainKey: ck,
+    headerNumber,
+    txBytes,
+    merkleProof,
+    continuityProof
+  } = result.data;
 
   console.log('Proof received');
   console.log('Header number:', headerNumber);
@@ -187,8 +201,29 @@ async function main() {
 
   console.log('SCORE RESULT');
   console.log(scoreResult);
+
+  const onChainWrite = await storeScoreOnChain(
+    summary.walletAddress,
+    scoreResult.score,
+    scoreResult.label
+  );
+
+  console.log('ON-CHAIN WRITE RESULT');
+  console.log(onChainWrite);
+
+  console.log('FINAL RESULT');
+  console.log({
+    verified: true,
+    walletAddress: summary.walletAddress,
+    score: scoreResult.score,
+    label: scoreResult.label,
+    registryAddress: onChainWrite.registryAddress,
+    registryTxHash: onChainWrite.txHash,
+    registryBlockNumber: onChainWrite.blockNumber
+  });
 }
 
 main().catch((error) => {
   console.error('Script failed:', error);
+  process.exit(1);
 });
