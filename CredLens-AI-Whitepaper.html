@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CredLens AI Whitepaper</title>
+  <link rel="icon" type="image/png" href="icon.png" />
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #cbd5e1;
+      --soft: #e2e8f0;
+      --panel: #f8fafc;
+      --navy: #082567;
+      --blue: #2288ff;
+      --emerald: #22d3a6;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #e5e7eb;
+      color: var(--ink);
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 12mm auto;
+      background: white;
+      padding: 18mm 18mm 16mm;
+      box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12);
+      position: relative;
+      page-break-after: always;
+    }
+
+    .page:last-child { page-break-after: auto; }
+
+    .cover {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #f8fbff 0%, #ffffff 52%, #effcf8 100%);
+      overflow: hidden;
+    }
+
+    .cover::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top right, rgba(34, 136, 255, 0.16), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(34, 211, 166, 0.12), transparent 30%);
+      pointer-events: none;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-logo {
+      width: 220px;
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .cover-main {
+      position: relative;
+      z-index: 1;
+      margin: 18mm 0 10mm;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(34, 136, 255, 0.1);
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 16px 0 12px;
+      font-size: 42px;
+      line-height: 1.08;
+      letter-spacing: -0.05em;
+    }
+
+    .subtitle {
+      max-width: 150mm;
+      font-size: 18px;
+      color: var(--muted);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--soft);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .card h3, h2 {
+      margin: 0 0 10px;
+      line-height: 1.2;
+    }
+
+    .meta {
+      display: grid;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .meta strong { color: var(--ink); }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: var(--navy);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    h2 {
+      font-size: 26px;
+      letter-spacing: -0.03em;
+      margin-top: 0;
+    }
+
+    h3 {
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    p { margin: 0 0 12px; }
+
+    ul {
+      margin: 8px 0 14px 18px;
+      padding: 0;
+    }
+
+    li { margin-bottom: 8px; }
+
+    .section {
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--soft);
+    }
+
+    .section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .mini {
+      border: 1px solid var(--soft);
+      border-radius: 14px;
+      background: var(--panel);
+      padding: 14px;
+    }
+
+    .mini strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--navy);
+    }
+
+    .quote {
+      border-left: 4px solid var(--blue);
+      padding: 12px 14px;
+      background: #f8fbff;
+      border-radius: 10px;
+      color: var(--muted);
+      margin: 12px 0;
+    }
+
+    .steps {
+      counter-reset: step;
+      display: grid;
+      gap: 12px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 12px 14px;
+      border: 1px solid var(--soft);
+      border-radius: 14px;
+      background: white;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      color: white;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .footer-note {
+      position: absolute;
+      left: 18mm;
+      right: 18mm;
+      bottom: 10mm;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #64748b;
+      border-top: 1px solid var(--soft);
+      padding-top: 6px;
+    }
+
+    .toc a {
+      color: var(--navy);
+      text-decoration: none;
+    }
+
+    .toc li {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px dashed var(--line);
+      padding-bottom: 6px;
+    }
+
+    .code {
+      font-family: Consolas, Monaco, monospace;
+      font-size: 12px;
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    @media print {
+      body { background: white; }
+      .page {
+        margin: 0;
+        box-shadow: none;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .page {
+        width: 100%;
+        min-height: auto;
+        margin: 0;
+        padding: 24px;
+      }
+      .hero-grid, .two-col, .three-col {
+        grid-template-columns: 1fr;
+      }
+      .footer-note {
+        position: static;
+        margin-top: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="page cover">
+    <div>
+      <div class="brand">
+        <img class="brand-logo" src="logo.png" alt="CredLens AI logo" />
+      </div>
+
+      <div class="cover-main">
+        <div class="eyebrow">Whitepaper · Version 1.0</div>
+        <h1>AI-Assisted Trust Scoring for Cross-Chain Wallet Credibility</h1>
+        <p class="subtitle">CredLens AI uses Attestcoin-verified onchain activity to convert cross-chain wallet behavior into an interpretable trust signal for lending, compliance, and protocol access decisions.</p>
+
+        <div class="hero-grid">
+          <div class="card">
+            <h3>Executive Abstract</h3>
+            <p>Onchain ecosystems have strong transparency but weak portable trust. Wallet history is fragmented across networks, raw transactions are difficult to interpret quickly, and many credit or access decisions still rely on shallow heuristics. CredLens AI addresses this gap with a lightweight trust scoring layer that verifies wallet-linked activity, analyzes behavior, and returns a clear risk label backed by an auditable attestation trail.</p>
+            <div class="pill-row">
+              <span class="pill">Attestcoin Verification</span>
+              <span class="pill">Cross-Chain Signals</span>
+              <span class="pill">Explainable Risk Output</span>
+              <span class="pill">Hackathon MVP</span>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Document Info</h3>
+            <div class="meta">
+              <div><strong>Project:</strong> CredLens AI</div>
+              <div><strong>Prepared for:</strong> BUIDL CTC 2026 Fall Hackathon</div>
+              <div><strong>Date:</strong> 2026-09-10</div>
+              <div><strong>Frontend:</strong> oxtejiri.github.io/CredLens-AI</div>
+              <div><strong>Backend:</strong> credlens-ai-bt2f.onrender.com</div>
+              <div><strong>Status:</strong> Working MVP with deployed demo flow</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-note">
+      <span>CredLens AI Whitepaper</span>
+      <span>Page 1</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="section toc">
+      <h2>Contents</h2>
+      <ul>
+        <li><a href="#problem">1. Problem Statement</a><span>2</span></li>
+        <li><a href="#solution">2. Solution Overview</a><span>2</span></li>
+        <li><a href="#how-it-works">3. How CredLens AI Works</a><span>3</span></li>
+        <li><a href="#architecture">4. System Architecture</a><span>3</span></li>
+        <li><a href="#scoring">5. Scoring Methodology</a><span>3</span></li>
+        <li><a href="#security">6. Security, Trust, and Limitations</a><span>4</span></li>
+        <li><a href="#use-cases">7. Use Cases</a><span>4</span></li>
+        <li><a href="#roadmap">8. Roadmap</a><span>4</span></li>
+        <li><a href="#appendix">9. Appendix</a><span>4</span></li>
+      </ul>
+    </div>
+
+    <div class="section" id="problem">
+      <h2>1. Problem Statement</h2>
+      <p>Web3 users increasingly operate across multiple chains, wallets, bridges, and applications, yet trust assessment remains primitive. Existing approaches often depend on single-chain views, vanity metrics, or manual review. This creates friction for lenders, grant programs, OTC counterparties, compliance teams, and applications that need a fast signal of whether a wallet appears credible, risky, or unknown.</p>
+      <p>The core challenge is not a lack of data. The challenge is transforming noisy, fragmented wallet activity into a signal that is both useful and defensible. Decision-makers need a way to verify that an analyzed wallet event is real, trace how a score was produced, and interpret the output without reading raw chain data.</p>
+      <div class="quote">CredLens AI treats trust as an interpretable behavioral signal, not a black-box claim. Verification and explainability are first-class parts of the product.</div>
+    </div>
+
+    <div class="section" id="solution">
+      <h2>2. Solution Overview</h2>
+      <p>CredLens AI is a trust scoring application that accepts a verified transaction reference, links it to a wallet, analyzes wallet-related activity, and returns a structured result containing verification status, chain provenance, a numeric score, a stored score, a risk label, and registry metadata. The result is designed for both human review and downstream machine use.</p>
+      <div class="three-col">
+        <div class="mini"><strong>Verify</strong>Confirm source-chain evidence through an Attestcoin-compatible attestation path before scoring.</div>
+        <div class="mini"><strong>Analyze</strong>Interpret wallet behavior and relevant activity to produce a compact trust signal.</div>
+        <div class="mini"><strong>Publish</strong>Return a result that can be displayed in the UI and referenced with registry transaction metadata.</div>
+      </div>
+    </div>
+
+    <div class="section" id="how-it-works">
+      <h2>3. How CredLens AI Works</h2>
+      <div class="steps">
+        <div class="step"><div><strong>Input collection.</strong> A user submits a transaction hash or wallet-linked proof through the frontend interface.</div></div>
+        <div class="step"><div><strong>Attestation check.</strong> The backend verifies the submitted activity against the expected source chain and attestation flow.</div></div>
+        <div class="step"><div><strong>Wallet extraction.</strong> The verified event is mapped to the originating wallet and transaction metadata.</div></div>
+        <div class="step"><div><strong>Scoring engine.</strong> Wallet-linked activity is processed into a raw score and a labeled trust outcome.</div></div>
+        <div class="step"><div><strong>Registry publication.</strong> The result is associated with a registry transaction hash and contract reference for auditability.</div></div>
+        <div class="step"><div><strong>User display.</strong> The frontend renders the outcome in an understandable format suitable for demos and reviewer inspection.</div></div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      <span>CredLens AI Whitepaper</span>
+      <span>Page 2</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="section" id="architecture">
+      <h2>4. System Architecture</h2>
+      <div class="two-col">
+        <div>
+          <h3>Frontend Layer</h3>
+          <p>The user interface is a vanilla HTML, CSS, and JavaScript application deployed on GitHub Pages. It provides a clean submission flow, displays live result cards, and surfaces the fields judges need to inspect quickly during a hackathon demo.</p>
+          <h3>Backend Layer</h3>
+          <p>The backend is a Node and TypeScript service deployed on Render. It handles verification, scoring, and response formatting without requiring a heavyweight framework. This keeps the MVP compact, transparent, and easy to reason about.</p>
+        </div>
+        <div>
+          <h3>Trust Layer</h3>
+          <p>CredLens AI depends on attestation-backed evidence rather than unaudited claims. Verification is central because trust scores are only useful when the underlying event can be tied to real onchain activity.</p>
+          <h3>Registry Layer</h3>
+          <p>The system returns registry metadata alongside the score, allowing a reviewer to inspect not only the verdict but also the transaction context associated with the stored result.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="scoring">
+      <h2>5. Scoring Methodology</h2>
+      <p>The current MVP focuses on a compact and interpretable trust signal rather than a high-dimensional opaque model. Scores are intended to summarize wallet credibility indicators into a format that can be read in seconds. The design principle is simple: a useful trust score should be verifiable, explainable, and operationally cheap to compute.</p>
+      <ul>
+        <li><strong>Verified input requirement:</strong> the system begins from a chain-backed, attestable event rather than anonymous self-reporting.</li>
+        <li><strong>Wallet-centric interpretation:</strong> the score is attached to the wallet identity extracted from the verified event.</li>
+        <li><strong>Normalized result shape:</strong> the API returns raw score, stored score, label, source chain, and registry metadata in one payload.</li>
+        <li><strong>Human-readable label:</strong> numeric results are mapped to intuitive descriptors such as risky or safer categories for quick review.</li>
+      </ul>
+      <p>As the project matures, the scoring engine can expand to include richer cross-chain behavioral features, reputation weighting, historical consistency checks, Sybil resistance signals, and model-calibrated confidence bands. The MVP intentionally prioritizes legibility over excessive complexity.</p>
+    </div>
+
+    <div class="section" id="security">
+      <h2>6. Security, Trust, and Limitations</h2>
+      <div class="two-col">
+        <div>
+          <h3>Security Principles</h3>
+          <ul>
+            <li>Do not treat unauthenticated wallet claims as equivalent to attested evidence.</li>
+            <li>Keep score outputs tied to chain provenance and registry metadata.</li>
+            <li>Preserve a simple response contract so downstream integrations can validate fields consistently.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Current MVP Limitations</h3>
+          <ul>
+            <li>The product is an early-stage trust scoring prototype, not a production underwriting engine.</li>
+            <li>Current scoring breadth is intentionally narrow to fit hackathon scope and maintain explainability.</li>
+            <li>Broader identity, sanctions, fraud, and credit integrations remain future work.</li>
+          </ul>
+        </div>
+      </div>
+      <p>These limitations are a feature of honest product framing. CredLens AI is positioned as an auditable trust signal for experimentation and early workflow support, not as a final authority on financial risk.</p>
+    </div>
+
+    <div class="section" id="use-cases">
+      <h2>7. Use Cases</h2>
+      <div class="three-col">
+        <div class="mini"><strong>Onchain Lending</strong>Use CredLens AI as a lightweight eligibility or review signal before offering uncollateralized or partially collateralized products.</div>
+        <div class="mini"><strong>Protocol Access</strong>Gate higher-risk features, API quotas, or premium workflows behind a minimum wallet credibility threshold.</div>
+        <div class="mini"><strong>Analyst Review</strong>Give compliance, operations, or ecosystem teams a faster first-pass read on wallet trust posture.</div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      <span>CredLens AI Whitepaper</span>
+      <span>Page 3</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="section" id="roadmap">
+      <h2>8. Roadmap</h2>
+      <ul>
+        <li><strong>Short term:</strong> polish the demo UX, publish the whitepaper, integrate brand assets, and complete submission materials for BUIDL CTC 2026 Fall.</li>
+        <li><strong>Next phase:</strong> expand supported trust features, improve score explanations, and expose a clean API for third-party integrations.</li>
+        <li><strong>Long term:</strong> develop stronger cross-chain reputation models, confidence scoring, and institution-friendly reporting workflows.</li>
+      </ul>
+      <p>The long-range opportunity is portable wallet credibility: a reusable trust layer that helps applications assess counterparties without sacrificing transparency.</p>
+    </div>
+
+    <div class="section">
+      <h2>9. Why CredLens AI Matters</h2>
+      <p>DeFi and onchain applications need better trust infrastructure. Fully manual review does not scale, and opaque black-box scoring introduces its own risks. CredLens AI sits in the middle: it uses verified onchain evidence, produces a compact score, and returns an auditable record that people can understand. That balance is what makes it suitable for real product workflows.</p>
+    </div>
+
+    <div class="section" id="appendix">
+      <h2>Appendix</h2>
+      <h3>Example Working Response Shape</h3>
+      <div class="code">{
+  "ok": true,
+  "result": {
+    "verified": true,
+    "sourceChain": "sepolia",
+    "sourceTxHash": "0x69779f3eaafd5ce64a43ac030def32961234201dad5c50311dfd260156a9c386",
+    "wallet": "0x8eDd995Ec2607f838d2D2410410a2e809746C5f6",
+    "rawScore": 8,
+    "storedScore": 8,
+    "label": "Risky",
+    "registryTxHash": "0xb7647ac8456f6090e361e6d8c9f77102e2d3d71ac889f3bf3fa6a2f7d6690b29",
+    "registryContract": "0x754DDe5EDd19307c777aDCc82Bb4e59a8CaC11e4"
+  }
+}</div>
+      <h3>Live Demo Endpoints</h3>
+      <ul>
+        <li>Frontend: https://oxtejiri.github.io/CredLens-AI/</li>
+        <li>Backend: https://credlens-ai-bt2f.onrender.com</li>
+        <li>Demo transaction hash: 0x69779f3eaafd5ce64a43ac030def32961234201dad5c50311dfd260156a9c386</li>
+      </ul>
+      <h3>Submission Note</h3>
+      <p>This whitepaper reflects the current hackathon MVP as of 2026-09-10. It documents the product direction, deployed demo architecture, and trust model intent. It should be read as a technical and product overview for judges, collaborators, and early integrators.</p>
+    </div>
+
+    <div class="footer-note">
+      <span>CredLens AI Whitepaper</span>
+      <span>Page 4</span>
+    </div>
+  </section>
+</body>
+</html>

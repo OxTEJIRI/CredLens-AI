@@ -1,10 +1,10 @@
 # CredLens AI
 
-**AI-powered trust scoring on Creditcoin using Attestcoin-verified cross-chain data**
+**AI-powered trust scoring on Creditcoin using Attestcoin-verified cross-chain data.**
 
 ## Status
 
-In development for **BUIDL CTC 2026 Fall**.
+Completed and built for **BUIDL CTC 2026 Fall**.
 
 ## Track
 
@@ -64,117 +64,172 @@ Example outputs:
 - **Review Needed**
 - **Risky**
 
-## Planned MVP
+## Live Demo
 
-The minimum viable product includes:
-- a simple frontend with wallet input
-- one Attestcoin-powered verified data flow
-- a lightweight scoring engine
-- a Creditcoin smart contract that stores the score and status
-- a testnet deployment
+- Frontend: https://oxtejiri.github.io/CredLens-AI/
+- Backend: https://credlens-ai-bt2f.onrender.com
+- Health check: https://credlens-ai-bt2f.onrender.com/health
+- Score endpoint: https://credlens-ai-bt2f.onrender.com/score
+
+## Why CredLens AI
+
+Most wallets are pseudonymous and difficult to assess in a trustworthy way. CredLens AI improves that by using **verifiable transaction evidence** instead of self-reported claims.
+
+The app:
+- verifies an Attestcoin-backed transaction on Sepolia
+- extracts the linked wallet activity context
+- computes a trust score from observed signals
+- labels the result for easier interpretation
+- writes the score to Creditcoin for durable registry-level visibility
+
+This creates a bridge between **cross-chain proof**, **AI-assisted risk interpretation**, and **credit-oriented onchain infrastructure**.
+
+## Core Features
+
+- **Attestcoin-backed verification** of Sepolia transaction evidence
+- **Trust score generation** from wallet-linked activity
+- **Creditcoin registry write-back** for persistent recording
+- **Simple public frontend** for entering a transaction hash and viewing results
+- **Live backend deployment** with production endpoints
+
+## How It Works
+
+1. A user submits a Sepolia transaction hash through the frontend.
+2. The backend verifies the transaction against the Attestcoin-backed flow.
+3. CredLens AI computes a trust score from the verified wallet context.
+4. The result is categorized into a human-readable risk label.
+5. The final score is written to the Creditcoin registry.
+6. The frontend displays the verification status, wallet, score, label, and registry transaction details.
+
+## Architecture
+
+### Frontend
+- Single-file vanilla HTML, CSS, and JavaScript
+- Hosted on GitHub Pages
+- Sends `POST /score` requests to the deployed backend
+- Displays verification and registry-write results in a clean score dashboard
+
+### Backend
+- Node.js + TypeScript
+- Uses native `node:http` server setup
+- Deployed on Render
+- Exposes public API endpoints for health checks and scoring
+- Handles verification, scoring, and Creditcoin write flow
+
+### Trust Flow
+- **Input:** Attestcoin-backed Sepolia transaction hash
+- **Verification:** Confirm source transaction and wallet association
+- **Scoring:** Compute trust / risk score from verified signals
+- **Registry Write:** Persist result to Creditcoin
+- **Output:** Structured JSON response for frontend display and downstream integrations
+
+## API
+
+### `GET /health`
+
+Checks whether the backend is live.
+
+Example response:
+
+{
+  "ok": true
+}
+
+### `POST /score`
+
+Computes and stores a trust score from a verified transaction.
+
+Request body:
+
+{
+  "txHash": "0x69779f3eaafd5ce64a43ac030def32961234201dad5c50311dfd260156a9c386"
+}
+
+Example response:
+
+{
+  "ok": true,
+  "result": {
+    "verified": true,
+    "sourceChain": "sepolia",
+    "sourceTxHash": "0x69779f3eaafd5ce64a43ac030def32961234201dad5c50311dfd260156a9c386",
+    "wallet": "0x8eDd995Ec2607f838d2D2410410a2e809746C5f6",
+    "rawScore": 8,
+    "storedScore": 8,
+    "label": "Risky",
+    "registryTxHash": "0xb7647ac8456f6090e361e6d8c9f77102e2d3d71ac889f3bf3fa6a2f7d6690b29",
+    "registryContract": "0x754DDe5EDd19307c777aDCc82Bb4e59a8CaC11e4"
+  }
+}
 
 ## Demo Flow
 
-The prototype demo will show one complete flow:
-1. user enters a wallet address
-2. the app retrieves verified cross-chain signals through Attestcoin
-3. the scoring engine analyzes the attested data
-4. the app generates a trust score and label
-5. the result is submitted to a Creditcoin smart contract on testnet
-6. the UI displays the final outcome and transaction confirmation
+1. Open the GitHub Pages frontend.
+2. Paste a valid Attestcoin-backed Sepolia transaction hash.
+3. Click **Verify and Score**.
+4. Review the returned verification result.
+5. Inspect the wallet, raw score, stored score, label, and registry write details.
 
-## High-Level Architecture
+## Tech Stack
 
-```text
-User Input
-   -> Frontend
-   -> Attestcoin-verified cross-chain data
-   -> Scoring engine
-   -> Creditcoin smart contract
-   -> On-chain trust result
-```
+- **Frontend:** HTML, CSS, JavaScript
+- **Backend:** Node.js, TypeScript
+- **Hosting:** GitHub Pages, Render
+- **Blockchain context:** Sepolia, Attestcoin, Creditcoin
 
-## Planned Repository Structure
+## Project Status
 
-```text
-.
-├── README.md
-├── contracts/
-├── frontend/
-├── docs/
-└── scripts/
-```
+### Completed
+- Backend deployed successfully on Render
+- Health endpoint working
+- Score endpoint working
+- Frontend connected to live backend
+- GitHub Pages frontend deployed
+- End-to-end scoring flow verified successfully
 
-## Scoring Approach
+### Next Up
+- Improve the frontend UI and branding
+- Add stronger score explanation and reasoning display
+- Test additional wallets for contrast demos
+- Record demo video for submission
+- Finalize submission materials
 
-The initial scoring model is designed to be simple, transparent, and demo-friendly.
+## Local Development
 
-Planned verified signals include:
-- wallet activity level
-- history depth
-- behavior consistency
+### Backend
 
-These signals are combined into a trust assessment that is easy to explain during judging and in the demo video.
+Install dependencies:
 
-## Submission Alignment
+npm install
 
-This project is designed to align with the hackathon requirements by aiming to provide:
-- meaningful and functional **Attestcoin Protocol** integration
-- a project deployed on **testnet**
-- technical documentation explaining the setup and integration flow
-- a GitHub repository with a README
-- a demo video and project deck for submission
+Run the server:
 
-## Technical Documentation
+npm run server
 
-Additional technical documentation will be added in `docs/`, including:
-- Attestcoin integration flow
-- contract behavior
-- scoring logic
-- local setup instructions
-- testnet deployment notes
+### Frontend
 
-## Roadmap
+Open `index.html` locally or serve it with a simple static server.
 
-### Phase 1
-- finalize architecture
-- implement Attestcoin integration
-- define the scoring logic
+## Hackathon Framing
 
-### Phase 2
-- build the Creditcoin smart contract
-- connect frontend to the verified data flow
-- deploy to testnet
+CredLens AI demonstrates how **verified wallet activity** can become a practical trust primitive. Instead of relying on opaque reputation claims, the app uses verifiable transaction evidence and writes a usable credit-oriented signal to Creditcoin.
 
-### Phase 3
-- prepare demo video
-- finalize deck or whitepaper
-- polish documentation and submission materials
+This makes the project relevant for:
+- onchain lending
+- borrower screening
+- wallet reputation
+- trust-based marketplace access
+- decentralized identity and risk tooling
 
-## Team
+## Submission Notes
 
-**Team name:** _To be added_
+Built for **BUIDL CTC 2026 Fall**.
 
-**Members:**
-- _To be added_
+CredLens AI combines:
+- **Attestcoin** for verifiable activity proof
+- **AI trust scoring** for interpretable assessment
+- **Creditcoin** for persistent registry-backed score storage
 
-## Links
+## Author
 
-- Project deck / whitepaper: _To be added_
-- Demo video: _To be added_
-- Testnet deployment: _To be added_
-- Repository: _This repository_
-
-## Current Status
-Stage 1 is complete: CredLens AI can take a real Ethereum Sepolia transaction hash, generate an Attestcoin proof with the USC SDK, and verify that proof on Creditcoin CC3 Testnet. The verification script currently prints VERIFIED for a valid attested transaction, confirming the proof-of-verification flow works end to end.
-
-Stage 2 is complete: verified Sepolia transaction data now flows into a deterministic CredLens AI wallet scoring pipeline, producing a score, label, and reasons from attested inputs.
-
-Stage 3 is complete: created and deployed CredLensScoreRegistry, tested it manually, then wired the scoring pipeline so it writes scores on-chain automatically.
-
-
-## Notes
-
-This README is the project foundation and will be updated as development progresses.
-
-The project is intentionally scoped to keep the Attestcoin integration central, demonstrable, and submission-ready for the hackathon.
+Built by **OxTEJIRI**.
