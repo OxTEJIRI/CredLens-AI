@@ -5,7 +5,8 @@
   "description": "**AI-powered trust scoring on Creditcoin using Attestcoin-verified cross-chain data**",
   "main": "index.js",
   "scripts": {
-    "verify:tx": "tsx src/verifyTx.ts"
+    "verify:tx": "tsx src/verifyTx.ts",
+    "api": "tsx server.ts"
   },
   "repository": {
     "type": "git",

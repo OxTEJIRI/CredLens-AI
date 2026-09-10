@@ -78,77 +78,78 @@ export function scoreWallet(input: VerifiedWalletInput): WalletScoreResult {
     throw new Error("No attested data, no score")
   }
 
-  let score = 0
+  let rawScore = 0
   const reasons: string[] = []
 
   if (input.walletAgeDays >= 180) {
-    score += 25
+    rawScore += 25
     reasons.push("Wallet history is older than 180 days")
   } else if (input.walletAgeDays >= 90) {
-    score += 18
+    rawScore += 18
     reasons.push("Wallet history is older than 90 days")
   } else if (input.walletAgeDays >= 30) {
-    score += 10
+    rawScore += 10
     reasons.push("Wallet history is at least 30 days old")
   } else {
     reasons.push("Wallet history is still very new")
   }
 
   if (input.txCount30d >= 20) {
-    score += 25
+    rawScore += 25
     reasons.push("High recent transaction activity")
   } else if (input.txCount30d >= 10) {
-    score += 18
+    rawScore += 18
     reasons.push("Solid recent transaction activity")
   } else if (input.txCount30d >= 3) {
-    score += 10
+    rawScore += 10
     reasons.push("Some recent transaction activity")
   } else {
     reasons.push("Very limited recent transaction activity")
   }
 
   if (input.uniqueActiveDays30d >= 10) {
-    score += 20
+    rawScore += 20
     reasons.push("Activity is spread across many days")
   } else if (input.uniqueActiveDays30d >= 5) {
-    score += 12
+    rawScore += 12
     reasons.push("Activity is reasonably consistent")
   } else if (input.uniqueActiveDays30d >= 2) {
-    score += 6
+    rawScore += 6
     reasons.push("Activity is somewhat concentrated")
   } else {
     reasons.push("Activity is concentrated into too few days")
   }
 
   if (input.totalTxCount >= 50) {
-    score += 15
+    rawScore += 15
     reasons.push("Wallet has a strong lifetime transaction count")
   } else if (input.totalTxCount >= 20) {
-    score += 10
+    rawScore += 10
     reasons.push("Wallet has a moderate lifetime transaction count")
   } else if (input.totalTxCount >= 5) {
-    score += 5
+    rawScore += 5
     reasons.push("Wallet has a small but non-trivial lifetime transaction count")
   } else {
     reasons.push("Wallet lifetime transaction count is very low")
   }
 
   if (input.avgTxValueEth >= 0.01 && input.avgTxValueEth <= 5) {
-    score += 15
+    rawScore += 15
     reasons.push("Average transaction value is within a healthy activity band")
   } else if (input.avgTxValueEth > 0 && input.avgTxValueEth < 0.01) {
-    score += 8
+    rawScore += 8
     reasons.push("Average transaction value is small but non-zero")
   } else if (input.avgTxValueEth > 5) {
-    score += 8
+    rawScore += 8
     reasons.push("Average transaction value is high")
   } else {
     reasons.push("Average transaction value is too close to zero")
   }
 
-  const finalScore = clampScore(score)
+  const finalScore = clampScore(rawScore)
 
   let label: WalletRiskLabel = "Risky"
+
   if (finalScore >= 70) {
     label = "Trusted"
   } else if (finalScore >= 40) {
@@ -164,7 +165,6 @@ export function scoreWallet(input: VerifiedWalletInput): WalletScoreResult {
 
 /*
 Example usage:
-
 const rawVerifiedData = {
   walletAddress: "0x1234...abcd",
   chain: "sepolia",

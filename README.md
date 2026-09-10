@@ -168,9 +168,9 @@ Additional technical documentation will be added in `docs/`, including:
 ## Current Status
 Stage 1 is complete: CredLens AI can take a real Ethereum Sepolia transaction hash, generate an Attestcoin proof with the USC SDK, and verify that proof on Creditcoin CC3 Testnet. The verification script currently prints VERIFIED for a valid attested transaction, confirming the proof-of-verification flow works end to end.
 
-Stage 2 complete: verified Sepolia transaction data now flows into a deterministic CredLens AI wallet scoring pipeline, producing a score, label, and reasons from attested inputs.
+Stage 2 is complete: verified Sepolia transaction data now flows into a deterministic CredLens AI wallet scoring pipeline, producing a score, label, and reasons from attested inputs.
 
-Status: Completed: created and deployed CredLensScoreRegistry, tested it manually, then wired the scoring pipeline so it writes scores on-chain automatically.
+Stage 3 is complete: created and deployed CredLensScoreRegistry, tested it manually, then wired the scoring pipeline so it writes scores on-chain automatically.
 
 
 ## Notes

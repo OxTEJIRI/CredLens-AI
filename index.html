@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CredLens AI</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --panel: #131a2a;
+      --panel-2: #1a2338;
+      --text: #f5f7fb;
+      --muted: #9aa4b2;
+      --accent: #6ea8fe;
+      --accent-2: #4f8cff;
+      --success: #18c37e;
+      --danger: #ff6b6b;
+      --border: #26324a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, #0b1020 0%, #11182a 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 840px;
+      background: rgba(19, 26, 42, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 32px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(110, 168, 254, 0.14), rgba(79, 140, 255, 0.04));
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .content {
+      padding: 24px 32px 32px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(110, 168, 254, 0.15);
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 18px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      min-width: 170px;
+    }
+
+    button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0 0 18px;
+    }
+
+    .banner {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.5;
+      border: 1px solid transparent;
+    }
+
+    .banner.show { display: block; }
+    .banner.loading {
+      background: rgba(110, 168, 254, 0.12);
+      border-color: rgba(110, 168, 254, 0.25);
+      color: #cfe1ff;
+    }
+    .banner.error {
+      background: rgba(255, 107, 107, 0.12);
+      border-color: rgba(255, 107, 107, 0.25);
+      color: #ffd4d4;
+    }
+
+    .results {
+      display: none;
+      margin-top: 8px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .results.show { display: block; }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .results-header h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .pill.success { color: #baf4dd; border-color: rgba(24, 195, 126, 0.3); }
+    .pill.warn { color: #ffe3a3; border-color: rgba(255, 203, 92, 0.3); }
+    .pill.danger { color: #ffd4d4; border-color: rgba(255, 107, 107, 0.3); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .card label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .card .value {
+      font-size: 15px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .summary {
+      margin-top: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .summary label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .summary p {
+      margin: 0;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    @media (max-width: 720px) {
+      .form-grid,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero,
+      .content {
+        padding: 20px;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <h1>CredLens AI</h1>
+      <p>Verify an Attestcoin-backed Sepolia transaction, compute a trust score, and write the result to the Creditcoin registry.</p>
+    </section>
+
+    <section class="content">
+      <div class="form-grid">
+        <input id="txHash" type="text" placeholder="Paste Sepolia transaction hash (0x...)" />
+        <button id="scoreButton">Verify and Score</button>
+      </div>
+
+      <p class="hint">Use a real Sepolia transaction hash that your backend pipeline can verify.</p>
+
+      <div id="loadingBanner" class="banner loading">Running verification, scoring, and registry write...</div>
+      <div id="errorBanner" class="banner error"></div>
+
+      <section id="results" class="results">
+        <div class="results-header">
+          <h2>Result</h2>
+          <div id="labelPill" class="pill">Pending</div>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <label>Verified</label>
+            <div id="verified" class="value">-</div>
+          </div>
+          <div class="card">
+            <label>Wallet Address</label>
+            <div id="walletAddress" class="value">-</div>
+          </div>
+          <div class="card">
+            <label>Source Tx Hash</label>
+            <div id="sourceTxHash" class="value">-</div>
+          </div>
+          <div class="card">
+            <label>Score</label>
+            <div id="score" class="value">-</div>
+          </div>
+          <div class="card">
+            <label>Label</label>
+            <div id="label" class="value">-</div>
+          </div>
+          <div class="card">
+            <label>Registry Address</label>
+            <div id="registryAddress" class="value">-</div>
+          </div>
+          <div class="card">
+            <label>Registry Tx Hash</label>
+            <div id="registryTxHash" class="value">-</div>
+          </div>
+          <div class="card">
+            <label>Registry Block Number</label>
+            <div id="registryBlockNumber" class="value">-</div>
+          </div>
+        </div>
+
+        <div class="summary">
+          <label>Summary</label>
+          <p id="summary">-</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE = 'http://localhost:3001';
+
+    const txHashInput = document.getElementById('txHash');
+    const scoreButton = document.getElementById('scoreButton');
+    const loadingBanner = document.getElementById('loadingBanner');
+    const errorBanner = document.getElementById('errorBanner');
+    const results = document.getElementById('results');
+    const labelPill = document.getElementById('labelPill');
+
+    const fields = {
+      verified: document.getElementById('verified'),
+      walletAddress: document.getElementById('walletAddress'),
+      sourceTxHash: document.getElementById('sourceTxHash'),
+      score: document.getElementById('score'),
+      label: document.getElementById('label'),
+      summary: document.getElementById('summary'),
+      registryAddress: document.getElementById('registryAddress'),
+      registryTxHash: document.getElementById('registryTxHash'),
+      registryBlockNumber: document.getElementById('registryBlockNumber'),
+    };
+
+    function setText(element, value) {
+      element.textContent = value === undefined || value === null || value === '' ? '-' : String(value);
+    }
+
+    function showLoading(isVisible) {
+      loadingBanner.classList.toggle('show', isVisible);
+      scoreButton.disabled = isVisible;
+      scoreButton.textContent = isVisible ? 'Processing...' : 'Verify and Score';
+    }
+
+    function showError(message) {
+      errorBanner.textContent = message;
+      errorBanner.classList.add('show');
+    }
+
+    function clearError() {
+      errorBanner.textContent = '';
+      errorBanner.classList.remove('show');
+    }
+
+    function setPill(label) {
+      labelPill.textContent = label || 'Unknown';
+      labelPill.className = 'pill';
+
+      const normalized = String(label || '').toLowerCase();
+      if (normalized.includes('trusted')) {
+        labelPill.classList.add('success');
+      } else if (normalized.includes('risky')) {
+        labelPill.classList.add('danger');
+      } else {
+        labelPill.classList.add('warn');
+      }
+    }
+
+    function renderResult(result) {
+      setText(fields.verified, result.verified);
+      setText(fields.walletAddress, result.walletAddress);
+      setText(fields.sourceTxHash, result.sourceTxHash);
+      setText(fields.score, result.score);
+      setText(fields.label, result.label);
+      setText(fields.summary, result.summary);
+      setText(fields.registryAddress, result.registryAddress);
+      setText(fields.registryTxHash, result.registryTxHash);
+      setText(fields.registryBlockNumber, result.registryBlockNumber);
+      setPill(result.label);
+      results.classList.add('show');
+    }
+
+    async function submitScore() {
+      const txHash = txHashInput.value.trim();
+      clearError();
+      results.classList.remove('show');
+
+      if (!/^0x[a-fA-F0-9]{64}$/.test(txHash)) {
+        showError('Enter a valid 0x-prefixed transaction hash.');
+        return;
+      }
+
+      showLoading(true);
+
+      try {
+        const response = await fetch(`${API_BASE}/score`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ txHash })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || 'Request failed.');
+        }
+
+        renderResult(data.result);
+      } catch (error) {
+        showError(error instanceof Error ? error.message : 'Unknown error.');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    scoreButton.addEventListener('click', submitScore);
+    txHashInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        submitScore();
+      }
+    });
+  </script>
+</body>
+</html>

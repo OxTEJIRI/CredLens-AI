@@ -22,6 +22,17 @@ export async function storeScoreOnChain(
     throw new Error(`Invalid wallet address: ${walletAddress}`);
   }
 
+  if (!Number.isFinite(score)) {
+    throw new Error(`Score must be a finite number, got: ${score}`);
+  }
+
+  const normalizedScore = Math.max(0, Math.min(100, Math.round(score)));
+  const normalizedLabel = label.trim();
+
+  if (!normalizedLabel) {
+    throw new Error('Label is required');
+  }
+
   const cc3RpcUrl = getRequiredEnv('CC3_RPC_URL');
   const privateKey = getRequiredEnv('PRIVATE_KEY');
   const registryAddress = getRequiredEnv('CREDLENS_REGISTRY_ADDRESS');
@@ -36,19 +47,34 @@ export async function storeScoreOnChain(
   const signer = new ethers.Wallet(privateKey, provider);
   const registry = new ethers.Contract(registryAddress, REGISTRY_ABI, signer);
 
-  const normalizedScore = Math.round(score);
+  console.log('--- CredLens registry write ---');
+  console.log('Registry address:', registryAddress);
+  console.log('Signer address:', signer.address);
+  console.log('Target wallet:', walletAddress);
+  console.log('Score:', normalizedScore);
+  console.log('Label:', normalizedLabel);
+  console.log('Sending setScore transaction...');
 
-  const tx = await registry.setScore(walletAddress, normalizedScore, label);
-  const receipt = await tx.wait();
+  try {
+    const tx = await registry.setScore(walletAddress, normalizedScore, normalizedLabel, {
+      gasLimit: 500000n
+    });
 
-  if (!receipt) {
-    throw new Error('setScore transaction was sent but no receipt was returned');
+    console.log('Submitted tx hash:', tx.hash);
+
+    return {
+      registryAddress,
+      txHash: tx.hash,
+      blockNumber: null,
+      scorerWallet: signer.address,
+      confirmed: false
+    };
+  } catch (error) {
+    console.error('setScore failed:', error);
+    throw new Error(
+      `Error calling contract method: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
   }
-
-  return {
-    registryAddress,
-    txHash: tx.hash,
-    blockNumber: receipt.blockNumber,
-    scorerWallet: signer.address
-  };
 }
