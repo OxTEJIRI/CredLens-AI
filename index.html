@@ -19,9 +19,7 @@
       --danger: #ff6b6b;
       --border: #26324a;
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: Inter, Arial, sans-serif;
@@ -33,7 +31,6 @@
       justify-content: center;
       padding: 24px;
     }
-
     .app {
       width: 100%;
       max-width: 900px;
@@ -43,37 +40,31 @@
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
       overflow: hidden;
     }
-
     .hero {
       padding: 32px;
       border-bottom: 1px solid var(--border);
       background: linear-gradient(135deg, rgba(110, 168, 254, 0.14), rgba(79, 140, 255, 0.04));
     }
-
     .hero h1 {
       margin: 0 0 10px;
       font-size: 34px;
       line-height: 1.1;
     }
-
     .hero p {
       margin: 0;
       color: var(--muted);
       font-size: 16px;
       line-height: 1.6;
     }
-
     .content {
       padding: 24px 32px 32px;
     }
-
     .form-grid {
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 12px;
       margin-bottom: 18px;
     }
-
     input {
       width: 100%;
       padding: 14px 16px;
@@ -84,12 +75,10 @@
       font-size: 15px;
       outline: none;
     }
-
     input:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(110, 168, 254, 0.15);
     }
-
     button {
       border: none;
       border-radius: 12px;
@@ -101,19 +90,16 @@
       cursor: pointer;
       min-width: 170px;
     }
-
     button:disabled {
       opacity: 0.65;
       cursor: not-allowed;
     }
-
     .hint {
       color: var(--muted);
       font-size: 14px;
       margin: 0 0 18px;
       line-height: 1.6;
     }
-
     .banner {
       display: none;
       padding: 14px 16px;
@@ -123,27 +109,22 @@
       line-height: 1.5;
       border: 1px solid transparent;
     }
-
     .banner.show { display: block; }
-
     .banner.loading {
       background: rgba(110, 168, 254, 0.12);
       border-color: rgba(110, 168, 254, 0.25);
       color: #cfe1ff;
     }
-
     .banner.error {
       background: rgba(255, 107, 107, 0.12);
       border-color: rgba(255, 107, 107, 0.25);
       color: #ffd4d4;
     }
-
     .banner.success {
       background: rgba(24, 195, 126, 0.12);
       border-color: rgba(24, 195, 126, 0.25);
       color: #c9ffe6;
     }
-
     .results {
       display: none;
       margin-top: 8px;
@@ -152,9 +133,7 @@
       border-radius: 16px;
       padding: 22px;
     }
-
     .results.show { display: block; }
-
     .results-header {
       display: flex;
       align-items: center;
@@ -163,12 +142,10 @@
       margin-bottom: 18px;
       flex-wrap: wrap;
     }
-
     .results-header h2 {
       margin: 0;
       font-size: 22px;
     }
-
     .pill {
       display: inline-flex;
       align-items: center;
@@ -180,35 +157,29 @@
       border: 1px solid var(--border);
       background: rgba(255, 255, 255, 0.03);
     }
-
     .pill.success {
       color: #baf4dd;
       border-color: rgba(24, 195, 126, 0.3);
     }
-
     .pill.warn {
       color: #ffe3a3;
       border-color: rgba(255, 203, 92, 0.3);
     }
-
     .pill.danger {
       color: #ffd4d4;
       border-color: rgba(255, 107, 107, 0.3);
     }
-
     .grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 14px;
     }
-
     .card {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 14px;
     }
-
     .card label {
       display: block;
       color: var(--muted);
@@ -217,13 +188,11 @@
       letter-spacing: 0.08em;
       margin-bottom: 8px;
     }
-
     .card .value {
       font-size: 15px;
       line-height: 1.5;
       word-break: break-word;
     }
-
     .summary {
       margin-top: 14px;
       background: rgba(255, 255, 255, 0.03);
@@ -231,7 +200,6 @@
       border-radius: 14px;
       padding: 16px;
     }
-
     .summary label {
       display: block;
       color: var(--muted);
@@ -240,24 +208,20 @@
       letter-spacing: 0.08em;
       margin-bottom: 8px;
     }
-
     .summary p {
       margin: 0;
       line-height: 1.7;
       color: var(--text);
     }
-
     @media (max-width: 720px) {
       .form-grid,
       .grid {
         grid-template-columns: 1fr;
       }
-
       .hero,
       .content {
         padding: 20px;
       }
-
       button {
         width: 100%;
       }
@@ -273,78 +237,63 @@
         and write the result to the Creditcoin registry.
       </p>
     </section>
-
     <section class="content">
       <div class="form-grid">
         <input id="txHash" type="text" placeholder="Paste Sepolia transaction hash (0x...)" />
         <button id="scoreButton">Verify and Score</button>
       </div>
-
       <p class="hint">
         Backend:
         <strong>https://credlens-ai-bt2f.onrender.com/score</strong>
       </p>
-
       <div id="statusBanner" class="banner"></div>
-
       <section id="results" class="results">
         <div class="results-header">
           <h2>Result</h2>
           <div id="labelPill" class="pill">Pending</div>
         </div>
-
         <div class="grid">
           <div class="card">
             <label>Verified</label>
             <div id="verified" class="value">-</div>
           </div>
-
           <div class="card">
             <label>Source Chain</label>
             <div id="sourceChain" class="value">-</div>
           </div>
-
           <div class="card">
             <label>Wallet Address</label>
             <div id="walletAddress" class="value">-</div>
           </div>
-
           <div class="card">
             <label>Source Tx Hash</label>
             <div id="sourceTxHash" class="value">-</div>
           </div>
-
           <div class="card">
             <label>Raw Score</label>
             <div id="rawScore" class="value">-</div>
           </div>
-
           <div class="card">
             <label>Stored Score</label>
             <div id="storedScore" class="value">-</div>
           </div>
-
           <div class="card">
             <label>Label</label>
             <div id="label" class="value">-</div>
           </div>
-
           <div class="card">
             <label>Registry Address</label>
             <div id="registryAddress" class="value">-</div>
           </div>
-
           <div class="card">
             <label>Registry Tx Hash</label>
             <div id="registryTxHash" class="value">-</div>
           </div>
-
           <div class="card">
             <label>Registry Block Number</label>
             <div id="registryBlockNumber" class="value">-</div>
           </div>
         </div>
-
         <div class="summary">
           <label>Summary</label>
           <p id="summary">-</p>
@@ -352,16 +301,13 @@
       </section>
     </section>
   </main>
-
   <script>
     const API_BASE_URL = "https://credlens-ai-bt2f.onrender.com";
     const SCORE_ENDPOINT = API_BASE_URL + "/score";
-
     const txHashInput = document.getElementById("txHash");
     const scoreButton = document.getElementById("scoreButton");
     const statusBanner = document.getElementById("statusBanner");
     const results = document.getElementById("results");
-
     const verifiedEl = document.getElementById("verified");
     const sourceChainEl = document.getElementById("sourceChain");
     const walletAddressEl = document.getElementById("walletAddress");
@@ -380,14 +326,8 @@
       statusBanner.className = "banner show " + type;
     }
 
-    function hideStatus() {
-      statusBanner.textContent = "";
-      statusBanner.className = "banner";
-    }
-
     function setLabelStyle(label) {
       const normalized = String(label || "").toLowerCase();
-
       if (normalized === "safe") {
         labelPillEl.className = "pill success";
       } else if (normalized === "moderate") {
@@ -420,7 +360,6 @@
       registryAddressEl.textContent = registryAddress;
       registryTxHashEl.textContent = registryTxHash;
       registryBlockNumberEl.textContent = String(registryBlockNumber);
-
       setLabelStyle(label);
 
       summaryEl.textContent = verified
@@ -477,14 +416,11 @@
     }
 
     scoreButton.addEventListener("click", scoreWallet);
-
     txHashInput.addEventListener("keydown", function (event) {
       if (event.key === "Enter") {
         scoreWallet();
       }
     });
-
-    txHashInput.value = "0x69779f3eaafd5ce64a43ac030def32961234201dad5c50311dfd260156a9c386";
   </script>
 </body>
 </html>
