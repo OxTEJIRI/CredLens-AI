@@ -11,7 +11,6 @@ function sendJson(res: ServerResponse, statusCode: number, payload: unknown) {
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   });
-
   res.end(JSON.stringify(payload, null, 2));
 }
 

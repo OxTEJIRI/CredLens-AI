@@ -311,116 +311,140 @@
   </main>
 
   <script>
-    const API_BASE = 'http://localhost:3001';
+  const API_BASE_URL = "https://credlens-ai-bt2f.onrender.com";
+  const SCORE_ENDPOINT = API_BASE_URL + "/score";
 
-    const txHashInput = document.getElementById('txHash');
-    const scoreButton = document.getElementById('scoreButton');
-    const loadingBanner = document.getElementById('loadingBanner');
-    const errorBanner = document.getElementById('errorBanner');
-    const results = document.getElementById('results');
-    const labelPill = document.getElementById('labelPill');
+  const txHashInput = document.getElementById("txHash");
+  const scoreBtn = document.getElementById("scoreBtn");
+  const statusBox = document.getElementById("statusBox");
+  const resultBox = document.getElementById("resultBox");
 
-    const fields = {
-      verified: document.getElementById('verified'),
-      walletAddress: document.getElementById('walletAddress'),
-      sourceTxHash: document.getElementById('sourceTxHash'),
-      score: document.getElementById('score'),
-      label: document.getElementById('label'),
-      summary: document.getElementById('summary'),
-      registryAddress: document.getElementById('registryAddress'),
-      registryTxHash: document.getElementById('registryTxHash'),
-      registryBlockNumber: document.getElementById('registryBlockNumber'),
-    };
+  const scoreCircle = document.getElementById("scoreCircle");
+  const scoreValue = document.getElementById("scoreValue");
+  const scoreBadge = document.getElementById("scoreBadge");
+  const scoreSummary = document.getElementById("scoreSummary");
 
-    function setText(element, value) {
-      element.textContent = value === undefined || value === null || value === '' ? '-' : String(value);
+  const verifiedValue = document.getElementById("verifiedValue");
+  const sourceChainValue = document.getElementById("sourceChainValue");
+  const walletValue = document.getElementById("walletValue");
+  const rawScoreValue = document.getElementById("rawScoreValue");
+  const storedScoreValue = document.getElementById("storedScoreValue");
+  const registryTxHashValue = document.getElementById("registryTxHashValue");
+  const registryContractValue = document.getElementById("registryContractValue");
+  const apiUrlLabel = document.getElementById("apiUrlLabel");
+
+  apiUrlLabel.textContent = SCORE_ENDPOINT;
+
+  function showStatus(message, type) {
+    statusBox.textContent = message;
+    statusBox.className = "status show " + type;
+  }
+
+  function setScoreStyle(score, label) {
+    let color = "#ff6b81";
+    let badgeClass = "pill risky";
+
+    if (String(label).toLowerCase() === "safe") {
+      color = "#7bffb0";
+      badgeClass = "pill safe";
+    } else if (String(label).toLowerCase() === "moderate") {
+      color = "#ffd166";
+      badgeClass = "pill moderate";
     }
 
-    function showLoading(isVisible) {
-      loadingBanner.classList.toggle('show', isVisible);
-      scoreButton.disabled = isVisible;
-      scoreButton.textContent = isVisible ? 'Processing...' : 'Verify and Score';
+    scoreCircle.style.borderColor = color;
+    scoreCircle.style.color = color;
+    scoreCircle.textContent = score;
+    scoreBadge.className = badgeClass;
+  }
+
+  function fillResult(result) {
+    const verified = result?.verified;
+    const sourceChain = result?.sourceChain || "Unknown";
+    const wallet = result?.wallet || "N/A";
+    const rawScore = result?.rawScore ?? "N/A";
+    const storedScore = result?.storedScore ?? "N/A";
+    const label = result?.label || "Unknown";
+    const registryTxHash = result?.registryTxHash || "N/A";
+    const registryContract = result?.registryContract || "N/A";
+
+    setScoreStyle(storedScore, label);
+
+    scoreValue.textContent = storedScore + "/100";
+    scoreBadge.textContent = label;
+    scoreSummary.textContent = verified
+      ? "Attestation verified successfully and score anchored on Creditcoin."
+      : "Verification failed, so no trusted score could be produced.";
+
+    verifiedValue.textContent = String(verified);
+    sourceChainValue.textContent = sourceChain;
+    walletValue.textContent = wallet;
+    rawScoreValue.textContent = String(rawScore);
+    storedScoreValue.textContent = String(storedScore);
+    registryTxHashValue.textContent = registryTxHash;
+    registryContractValue.textContent = registryContract;
+
+    resultBox.classList.add("show");
+  }
+
+  async function scoreWallet() {
+    const txHash = txHashInput.value.trim();
+
+    if (!txHash) {
+      showStatus("Please enter a transaction hash.", "error");
+      resultBox.classList.remove("show");
+      return;
     }
 
-    function showError(message) {
-      errorBanner.textContent = message;
-      errorBanner.classList.add('show');
+    if (!/^0x[a-fA-F0-9]{64}$/.test(txHash)) {
+      showStatus("Please enter a valid 0x-prefixed transaction hash.", "error");
+      resultBox.classList.remove("show");
+      return;
     }
 
-    function clearError() {
-      errorBanner.textContent = '';
-      errorBanner.classList.remove('show');
-    }
+    scoreBtn.disabled = true;
+    scoreBtn.textContent = "Scoring...";
+    resultBox.classList.remove("show");
+    showStatus("Verifying attestation, computing trust score, and writing to Creditcoin...", "loading");
 
-    function setPill(label) {
-      labelPill.textContent = label || 'Unknown';
-      labelPill.className = 'pill';
+    try {
+      const response = await fetch(SCORE_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ txHash })
+      });
 
-      const normalized = String(label || '').toLowerCase();
-      if (normalized.includes('trusted')) {
-        labelPill.classList.add('success');
-      } else if (normalized.includes('risky')) {
-        labelPill.classList.add('danger');
-      } else {
-        labelPill.classList.add('warn');
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data?.error || "Request failed");
       }
+
+      fillResult(data.result);
+      showStatus("Success: live score fetched from your real backend.", "success");
+    } catch (error) {
+      console.error(error);
+      showStatus(
+        "Request failed: " + (error.message || "Unknown error") + ". Make sure your backend is running on http://localhost:3001.",
+        "error"
+      );
+    } finally {
+      scoreBtn.disabled = false;
+      scoreBtn.textContent = "Score Wallet";
     }
+  }
 
-    function renderResult(result) {
-      setText(fields.verified, result.verified);
-      setText(fields.walletAddress, result.walletAddress);
-      setText(fields.sourceTxHash, result.sourceTxHash);
-      setText(fields.score, result.score);
-      setText(fields.label, result.label);
-      setText(fields.summary, result.summary);
-      setText(fields.registryAddress, result.registryAddress);
-      setText(fields.registryTxHash, result.registryTxHash);
-      setText(fields.registryBlockNumber, result.registryBlockNumber);
-      setPill(result.label);
-      results.classList.add('show');
+  scoreBtn.addEventListener("click", scoreWallet);
+
+  txHashInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      scoreWallet();
     }
+  });
 
-    async function submitScore() {
-      const txHash = txHashInput.value.trim();
-      clearError();
-      results.classList.remove('show');
-
-      if (!/^0x[a-fA-F0-9]{64}$/.test(txHash)) {
-        showError('Enter a valid 0x-prefixed transaction hash.');
-        return;
-      }
-
-      showLoading(true);
-
-      try {
-        const response = await fetch(`${API_BASE}/score`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ txHash })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok || !data.ok) {
-          throw new Error(data.error || 'Request failed.');
-        }
-
-        renderResult(data.result);
-      } catch (error) {
-        showError(error instanceof Error ? error.message : 'Unknown error.');
-      } finally {
-        showLoading(false);
-      }
-    }
-
-    scoreButton.addEventListener('click', submitScore);
-    txHashInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        submitScore();
-      }
-    });
-  </script>
+  txHashInput.value = "0x69779f3eaafd5ce64a43ac030def32961234201dad5c50311dfd260156a9c386";
+</script>
 </body>
 </html>
