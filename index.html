@@ -396,7 +396,7 @@
       </p>
 
       <div class="form-grid">
-        <input id="txHash" type="text" placeholder="Paste Sepolia transaction hash (0x...)" />
+        <input id="txHash" type="text" placeholder="Paste Sepolia transaction hash (0x...)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
         <button id="scoreButton">Verify and Score</button>
       </div>
 
@@ -461,6 +461,10 @@
     const API_BASE_URL = "https://credlens-ai-bt2f.onrender.com";
     const SCORE_ENDPOINT = API_BASE_URL + "/score";
     const txHashInput = document.getElementById("txHash");
+
+    window.addEventListener("DOMContentLoaded", () => {
+      txHashInput.value = "";
+    });
     const scoreButton = document.getElementById("scoreButton");
     const statusBanner = document.getElementById("statusBanner");
     const results = document.getElementById("results");
