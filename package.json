@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "verify:tx": "tsx src/verifyTx.ts",
+    "server": "tsx server.ts",
     "api": "tsx server.ts"
   },
   "repository": {
