@@ -15,6 +15,7 @@
       --accent: #6ea8fe;
       --accent-2: #4f8cff;
       --success: #18c37e;
+      --warning: #ffcb5c;
       --danger: #ff6b6b;
       --border: #26324a;
     }
@@ -35,7 +36,7 @@
 
     .app {
       width: 100%;
-      max-width: 840px;
+      max-width: 900px;
       background: rgba(19, 26, 42, 0.95);
       border: 1px solid var(--border);
       border-radius: 20px;
@@ -110,6 +111,7 @@
       color: var(--muted);
       font-size: 14px;
       margin: 0 0 18px;
+      line-height: 1.6;
     }
 
     .banner {
@@ -123,15 +125,23 @@
     }
 
     .banner.show { display: block; }
+
     .banner.loading {
       background: rgba(110, 168, 254, 0.12);
       border-color: rgba(110, 168, 254, 0.25);
       color: #cfe1ff;
     }
+
     .banner.error {
       background: rgba(255, 107, 107, 0.12);
       border-color: rgba(255, 107, 107, 0.25);
       color: #ffd4d4;
+    }
+
+    .banner.success {
+      background: rgba(24, 195, 126, 0.12);
+      border-color: rgba(24, 195, 126, 0.25);
+      color: #c9ffe6;
     }
 
     .results {
@@ -171,9 +181,20 @@
       background: rgba(255, 255, 255, 0.03);
     }
 
-    .pill.success { color: #baf4dd; border-color: rgba(24, 195, 126, 0.3); }
-    .pill.warn { color: #ffe3a3; border-color: rgba(255, 203, 92, 0.3); }
-    .pill.danger { color: #ffd4d4; border-color: rgba(255, 107, 107, 0.3); }
+    .pill.success {
+      color: #baf4dd;
+      border-color: rgba(24, 195, 126, 0.3);
+    }
+
+    .pill.warn {
+      color: #ffe3a3;
+      border-color: rgba(255, 203, 92, 0.3);
+    }
+
+    .pill.danger {
+      color: #ffd4d4;
+      border-color: rgba(255, 107, 107, 0.3);
+    }
 
     .grid {
       display: grid;
@@ -247,7 +268,10 @@
   <main class="app">
     <section class="hero">
       <h1>CredLens AI</h1>
-      <p>Verify an Attestcoin-backed Sepolia transaction, compute a trust score, and write the result to the Creditcoin registry.</p>
+      <p>
+        Verify an Attestcoin-backed Sepolia transaction, compute a trust score,
+        and write the result to the Creditcoin registry.
+      </p>
     </section>
 
     <section class="content">
@@ -256,10 +280,12 @@
         <button id="scoreButton">Verify and Score</button>
       </div>
 
-      <p class="hint">Use a real Sepolia transaction hash that your backend pipeline can verify.</p>
+      <p class="hint">
+        Backend:
+        <strong>https://credlens-ai-bt2f.onrender.com/score</strong>
+      </p>
 
-      <div id="loadingBanner" class="banner loading">Running verification, scoring, and registry write...</div>
-      <div id="errorBanner" class="banner error"></div>
+      <div id="statusBanner" class="banner"></div>
 
       <section id="results" class="results">
         <div class="results-header">
@@ -272,30 +298,47 @@
             <label>Verified</label>
             <div id="verified" class="value">-</div>
           </div>
+
+          <div class="card">
+            <label>Source Chain</label>
+            <div id="sourceChain" class="value">-</div>
+          </div>
+
           <div class="card">
             <label>Wallet Address</label>
             <div id="walletAddress" class="value">-</div>
           </div>
+
           <div class="card">
             <label>Source Tx Hash</label>
             <div id="sourceTxHash" class="value">-</div>
           </div>
+
           <div class="card">
-            <label>Score</label>
-            <div id="score" class="value">-</div>
+            <label>Raw Score</label>
+            <div id="rawScore" class="value">-</div>
           </div>
+
+          <div class="card">
+            <label>Stored Score</label>
+            <div id="storedScore" class="value">-</div>
+          </div>
+
           <div class="card">
             <label>Label</label>
             <div id="label" class="value">-</div>
           </div>
+
           <div class="card">
             <label>Registry Address</label>
             <div id="registryAddress" class="value">-</div>
           </div>
+
           <div class="card">
             <label>Registry Tx Hash</label>
             <div id="registryTxHash" class="value">-</div>
           </div>
+
           <div class="card">
             <label>Registry Block Number</label>
             <div id="registryBlockNumber" class="value">-</div>
@@ -311,140 +354,137 @@
   </main>
 
   <script>
-  const API_BASE_URL = "https://credlens-ai-bt2f.onrender.com";
-  const SCORE_ENDPOINT = API_BASE_URL + "/score";
+    const API_BASE_URL = "https://credlens-ai-bt2f.onrender.com";
+    const SCORE_ENDPOINT = API_BASE_URL + "/score";
 
-  const txHashInput = document.getElementById("txHash");
-  const scoreBtn = document.getElementById("scoreBtn");
-  const statusBox = document.getElementById("statusBox");
-  const resultBox = document.getElementById("resultBox");
+    const txHashInput = document.getElementById("txHash");
+    const scoreButton = document.getElementById("scoreButton");
+    const statusBanner = document.getElementById("statusBanner");
+    const results = document.getElementById("results");
 
-  const scoreCircle = document.getElementById("scoreCircle");
-  const scoreValue = document.getElementById("scoreValue");
-  const scoreBadge = document.getElementById("scoreBadge");
-  const scoreSummary = document.getElementById("scoreSummary");
+    const verifiedEl = document.getElementById("verified");
+    const sourceChainEl = document.getElementById("sourceChain");
+    const walletAddressEl = document.getElementById("walletAddress");
+    const sourceTxHashEl = document.getElementById("sourceTxHash");
+    const rawScoreEl = document.getElementById("rawScore");
+    const storedScoreEl = document.getElementById("storedScore");
+    const labelEl = document.getElementById("label");
+    const labelPillEl = document.getElementById("labelPill");
+    const registryAddressEl = document.getElementById("registryAddress");
+    const registryTxHashEl = document.getElementById("registryTxHash");
+    const registryBlockNumberEl = document.getElementById("registryBlockNumber");
+    const summaryEl = document.getElementById("summary");
 
-  const verifiedValue = document.getElementById("verifiedValue");
-  const sourceChainValue = document.getElementById("sourceChainValue");
-  const walletValue = document.getElementById("walletValue");
-  const rawScoreValue = document.getElementById("rawScoreValue");
-  const storedScoreValue = document.getElementById("storedScoreValue");
-  const registryTxHashValue = document.getElementById("registryTxHashValue");
-  const registryContractValue = document.getElementById("registryContractValue");
-  const apiUrlLabel = document.getElementById("apiUrlLabel");
-
-  apiUrlLabel.textContent = SCORE_ENDPOINT;
-
-  function showStatus(message, type) {
-    statusBox.textContent = message;
-    statusBox.className = "status show " + type;
-  }
-
-  function setScoreStyle(score, label) {
-    let color = "#ff6b81";
-    let badgeClass = "pill risky";
-
-    if (String(label).toLowerCase() === "safe") {
-      color = "#7bffb0";
-      badgeClass = "pill safe";
-    } else if (String(label).toLowerCase() === "moderate") {
-      color = "#ffd166";
-      badgeClass = "pill moderate";
+    function showStatus(message, type) {
+      statusBanner.textContent = message;
+      statusBanner.className = "banner show " + type;
     }
 
-    scoreCircle.style.borderColor = color;
-    scoreCircle.style.color = color;
-    scoreCircle.textContent = score;
-    scoreBadge.className = badgeClass;
-  }
-
-  function fillResult(result) {
-    const verified = result?.verified;
-    const sourceChain = result?.sourceChain || "Unknown";
-    const wallet = result?.wallet || "N/A";
-    const rawScore = result?.rawScore ?? "N/A";
-    const storedScore = result?.storedScore ?? "N/A";
-    const label = result?.label || "Unknown";
-    const registryTxHash = result?.registryTxHash || "N/A";
-    const registryContract = result?.registryContract || "N/A";
-
-    setScoreStyle(storedScore, label);
-
-    scoreValue.textContent = storedScore + "/100";
-    scoreBadge.textContent = label;
-    scoreSummary.textContent = verified
-      ? "Attestation verified successfully and score anchored on Creditcoin."
-      : "Verification failed, so no trusted score could be produced.";
-
-    verifiedValue.textContent = String(verified);
-    sourceChainValue.textContent = sourceChain;
-    walletValue.textContent = wallet;
-    rawScoreValue.textContent = String(rawScore);
-    storedScoreValue.textContent = String(storedScore);
-    registryTxHashValue.textContent = registryTxHash;
-    registryContractValue.textContent = registryContract;
-
-    resultBox.classList.add("show");
-  }
-
-  async function scoreWallet() {
-    const txHash = txHashInput.value.trim();
-
-    if (!txHash) {
-      showStatus("Please enter a transaction hash.", "error");
-      resultBox.classList.remove("show");
-      return;
+    function hideStatus() {
+      statusBanner.textContent = "";
+      statusBanner.className = "banner";
     }
 
-    if (!/^0x[a-fA-F0-9]{64}$/.test(txHash)) {
-      showStatus("Please enter a valid 0x-prefixed transaction hash.", "error");
-      resultBox.classList.remove("show");
-      return;
+    function setLabelStyle(label) {
+      const normalized = String(label || "").toLowerCase();
+
+      if (normalized === "safe") {
+        labelPillEl.className = "pill success";
+      } else if (normalized === "moderate") {
+        labelPillEl.className = "pill warn";
+      } else {
+        labelPillEl.className = "pill danger";
+      }
     }
 
-    scoreBtn.disabled = true;
-    scoreBtn.textContent = "Scoring...";
-    resultBox.classList.remove("show");
-    showStatus("Verifying attestation, computing trust score, and writing to Creditcoin...", "loading");
+    function fillResult(result) {
+      const verified = result?.verified ?? false;
+      const sourceChain = result?.sourceChain ?? "N/A";
+      const sourceTxHash = result?.sourceTxHash ?? txHashInput.value.trim();
+      const wallet = result?.wallet ?? "N/A";
+      const rawScore = result?.rawScore ?? "N/A";
+      const storedScore = result?.storedScore ?? "N/A";
+      const label = result?.label ?? "Unknown";
+      const registryAddress = result?.registryContract ?? result?.registryAddress ?? "N/A";
+      const registryTxHash = result?.registryTxHash ?? "N/A";
+      const registryBlockNumber = result?.registryBlockNumber ?? "N/A";
 
-    try {
-      const response = await fetch(SCORE_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ txHash })
-      });
+      verifiedEl.textContent = String(verified);
+      sourceChainEl.textContent = sourceChain;
+      walletAddressEl.textContent = wallet;
+      sourceTxHashEl.textContent = sourceTxHash;
+      rawScoreEl.textContent = String(rawScore);
+      storedScoreEl.textContent = String(storedScore);
+      labelEl.textContent = label;
+      labelPillEl.textContent = label;
+      registryAddressEl.textContent = registryAddress;
+      registryTxHashEl.textContent = registryTxHash;
+      registryBlockNumberEl.textContent = String(registryBlockNumber);
 
-      const data = await response.json();
+      setLabelStyle(label);
 
-      if (!response.ok || !data.ok) {
-        throw new Error(data?.error || "Request failed");
+      summaryEl.textContent = verified
+        ? `Attestation verified on ${sourceChain}. CredLens AI computed a raw score of ${rawScore}, stored ${storedScore} on Creditcoin, and returned label "${label}".`
+        : "Verification failed, so a trusted score could not be produced.";
+
+      results.classList.add("show");
+    }
+
+    async function scoreWallet() {
+      const txHash = txHashInput.value.trim();
+
+      if (!txHash) {
+        showStatus("Please enter a transaction hash.", "error");
+        results.classList.remove("show");
+        return;
       }
 
-      fillResult(data.result);
-      showStatus("Success: live score fetched from your real backend.", "success");
-    } catch (error) {
-      console.error(error);
-      showStatus(
-        "Request failed: " + (error.message || "Unknown error") + ". Make sure your backend is running on http://localhost:3001.",
-        "error"
-      );
-    } finally {
-      scoreBtn.disabled = false;
-      scoreBtn.textContent = "Score Wallet";
+      if (!/^0x[a-fA-F0-9]{64}$/.test(txHash)) {
+        showStatus("Please enter a valid 0x-prefixed transaction hash.", "error");
+        results.classList.remove("show");
+        return;
+      }
+
+      scoreButton.disabled = true;
+      scoreButton.textContent = "Scoring...";
+      results.classList.remove("show");
+      showStatus("Running verification, scoring, and registry write...", "loading");
+
+      try {
+        const response = await fetch(SCORE_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ txHash })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data?.error || "Request failed");
+        }
+
+        fillResult(data.result);
+        showStatus("Success: live score fetched from your deployed backend.", "success");
+      } catch (error) {
+        console.error(error);
+        showStatus("Request failed: " + (error.message || "Unknown error"), "error");
+      } finally {
+        scoreButton.disabled = false;
+        scoreButton.textContent = "Verify and Score";
+      }
     }
-  }
 
-  scoreBtn.addEventListener("click", scoreWallet);
+    scoreButton.addEventListener("click", scoreWallet);
 
-  txHashInput.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      scoreWallet();
-    }
-  });
+    txHashInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        scoreWallet();
+      }
+    });
 
-  txHashInput.value = "0x69779f3eaafd5ce64a43ac030def32961234201dad5c50311dfd260156a9c386";
-</script>
+    txHashInput.value = "0x69779f3eaafd5ce64a43ac030def32961234201dad5c50311dfd260156a9c386";
+  </script>
 </body>
 </html>
