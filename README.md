@@ -187,13 +187,6 @@ Example response:
 - GitHub Pages frontend deployed
 - End-to-end scoring flow verified successfully
 
-### Next Up
-- Improve the frontend UI and branding
-- Add stronger score explanation and reasoning display
-- Test additional wallets for contrast demos
-- Record demo video for submission
-- Finalize submission materials
-
 ## Local Development
 
 ### Backend

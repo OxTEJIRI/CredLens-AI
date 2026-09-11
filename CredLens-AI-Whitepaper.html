@@ -4,17 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CredLens AI Whitepaper</title>
-  <link rel="icon" type="image/png" href="icon.png" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23b98f5a'/%3E%3Cstop offset='1' stop-color='%236e5bd7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='%230f0b12'/%3E%3Cpath d='M20 18h15c8 0 14 6 14 14s-6 14-14 14H20V18zm12 8h-4v12h4c4 0 7-2.7 7-6s-3-6-7-6z' fill='url(%23g)'/%3E%3C/svg%3E" />
   <style>
     :root {
-      --ink: #0f172a;
-      --muted: #475569;
-      --line: #cbd5e1;
-      --soft: #e2e8f0;
-      --panel: #f8fafc;
-      --navy: #082567;
-      --blue: #2288ff;
-      --emerald: #22d3a6;
+      --bg: #0a070c;
+      --bg-2: #120d14;
+      --page: #120d12;
+      --page-top: #171117;
+      --card: rgba(255, 248, 240, 0.055);
+      --card-2: rgba(255, 248, 240, 0.035);
+      --panel: rgba(255, 248, 240, 0.045);
+      --ink: #f6edde;
+      --muted: #cbbca9;
+      --soft: rgba(246, 237, 222, 0.14);
+      --line: rgba(246, 237, 222, 0.16);
+      --navy: #f1dfc4;
+      --blue: #b98f5a;
+      --emerald: #6e5bd7;
+      --accent-2: #b98f5a;
+      --accent-3: #6e5bd7;
+      --glow-amber: rgba(185, 143, 90, 0.22);
+      --glow-violet: rgba(110, 91, 215, 0.18);
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
     }
 
     * { box-sizing: border-box; }
@@ -22,21 +33,42 @@
     html, body {
       margin: 0;
       padding: 0;
-      background: #e5e7eb;
+      background:
+        radial-gradient(circle at top left, rgba(185, 143, 90, 0.09), transparent 24%),
+        radial-gradient(circle at top right, rgba(110, 91, 215, 0.08), transparent 26%),
+        linear-gradient(180deg, #09060a 0%, #110b11 52%, #0a070c 100%);
       color: var(--ink);
       font-family: Inter, Segoe UI, Arial, sans-serif;
       line-height: 1.6;
+    }
+
+    body {
+      padding: 24px 12px 48px;
     }
 
     .page {
       width: 210mm;
       min-height: 297mm;
       margin: 12mm auto;
-      background: white;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.005)),
+        linear-gradient(180deg, var(--page-top) 0%, var(--page) 100%);
       padding: 18mm 18mm 16mm;
-      box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(246, 237, 222, 0.08);
       position: relative;
       page-break-after: always;
+      overflow: hidden;
+    }
+
+    .page::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top right, rgba(185, 143, 90, 0.09), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(110, 91, 215, 0.08), transparent 32%);
+      pointer-events: none;
     }
 
     .page:last-child { page-break-after: auto; }
@@ -45,8 +77,10 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      background: linear-gradient(135deg, #f8fbff 0%, #ffffff 52%, #effcf8 100%);
-      overflow: hidden;
+      background:
+        radial-gradient(circle at 88% 12%, rgba(185, 143, 90, 0.16), transparent 24%),
+        radial-gradient(circle at 8% 88%, rgba(110, 91, 215, 0.15), transparent 24%),
+        linear-gradient(180deg, #130d13 0%, #0f0a10 100%);
     }
 
     .cover::before {
@@ -54,8 +88,9 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(circle at top right, rgba(34, 136, 255, 0.16), transparent 28%),
-        radial-gradient(circle at bottom left, rgba(34, 211, 166, 0.12), transparent 30%);
+        linear-gradient(135deg, rgba(255,255,255,0.02), transparent 42%),
+        radial-gradient(circle at top right, rgba(185, 143, 90, 0.12), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(110, 91, 215, 0.12), transparent 30%);
       pointer-events: none;
     }
 
@@ -84,12 +119,19 @@
       display: inline-block;
       padding: 6px 12px;
       border-radius: 999px;
-      background: rgba(34, 136, 255, 0.1);
-      color: var(--navy);
+      background: linear-gradient(135deg, rgba(185, 143, 90, 0.16), rgba(110, 91, 215, 0.14));
+      border: 1px solid rgba(246, 237, 222, 0.14);
+      color: var(--ink);
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    h1, h2, h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 700;
     }
 
     h1 {
@@ -97,6 +139,8 @@
       font-size: 42px;
       line-height: 1.08;
       letter-spacing: -0.05em;
+      color: var(--ink);
+      max-width: 168mm;
     }
 
     .subtitle {
@@ -113,11 +157,14 @@
     }
 
     .card {
-      background: white;
-      border: 1px solid var(--soft);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)),
+        var(--card);
+      border: 1px solid rgba(246, 237, 222, 0.1);
       border-radius: 18px;
       padding: 18px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(6px);
     }
 
     .card h3, h2 {
@@ -142,24 +189,27 @@
     }
 
     .pill {
-      border: 1px solid #bfdbfe;
-      background: #eff6ff;
-      color: var(--navy);
+      border: 1px solid rgba(246, 237, 222, 0.14);
+      background: linear-gradient(135deg, rgba(185, 143, 90, 0.16), rgba(110, 91, 215, 0.14));
+      color: var(--ink);
       padding: 6px 10px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 700;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
     }
 
     h2 {
       font-size: 26px;
       letter-spacing: -0.03em;
       margin-top: 0;
+      color: var(--ink);
     }
 
     h3 {
       font-size: 17px;
       letter-spacing: -0.02em;
+      color: var(--ink);
     }
 
     p { margin: 0 0 12px; }
@@ -175,6 +225,8 @@
       margin-bottom: 22px;
       padding-bottom: 18px;
       border-bottom: 1px solid var(--soft);
+      position: relative;
+      z-index: 1;
     }
 
     .section:last-child {
@@ -196,10 +248,13 @@
     }
 
     .mini {
-      border: 1px solid var(--soft);
+      border: 1px solid rgba(246, 237, 222, 0.1);
       border-radius: 14px;
-      background: var(--panel);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.008)),
+        var(--panel);
       padding: 14px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
     }
 
     .mini strong {
@@ -209,12 +264,15 @@
     }
 
     .quote {
-      border-left: 4px solid var(--blue);
+      border-left: 4px solid var(--accent-2);
       padding: 12px 14px;
-      background: #f8fbff;
+      background: linear-gradient(135deg, rgba(185, 143, 90, 0.08), rgba(110, 91, 215, 0.06));
       border-radius: 10px;
       color: var(--muted);
       margin: 12px 0;
+      border-top: 1px solid rgba(246, 237, 222, 0.08);
+      border-right: 1px solid rgba(246, 237, 222, 0.08);
+      border-bottom: 1px solid rgba(246, 237, 222, 0.08);
     }
 
     .steps {
@@ -229,9 +287,11 @@
       gap: 12px;
       align-items: start;
       padding: 12px 14px;
-      border: 1px solid var(--soft);
+      border: 1px solid rgba(246, 237, 222, 0.1);
       border-radius: 14px;
-      background: white;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.022), rgba(255,255,255,0.006)),
+        var(--card-2);
     }
 
     .step::before {
@@ -242,10 +302,11 @@
       border-radius: 999px;
       display: grid;
       place-items: center;
-      background: linear-gradient(135deg, var(--navy), var(--blue));
+      background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
       color: white;
       font-weight: 800;
       font-size: 14px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
     }
 
     .footer-note {
@@ -256,9 +317,10 @@
       display: flex;
       justify-content: space-between;
       font-size: 11px;
-      color: #64748b;
+      color: rgba(246, 237, 222, 0.52);
       border-top: 1px solid var(--soft);
       padding-top: 6px;
+      z-index: 1;
     }
 
     .toc a {
@@ -277,12 +339,37 @@
     .code {
       font-family: Consolas, Monaco, monospace;
       font-size: 12px;
-      background: #0f172a;
-      color: #e2e8f0;
+      background: #090c14;
+      color: #e9e1d4;
+      border: 1px solid rgba(246, 237, 222, 0.1);
       border-radius: 12px;
       padding: 12px;
       overflow-wrap: anywhere;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
     }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 26px;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      display: block;
+      object-fit: contain;
+      flex: 0 0 auto;
+      filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.22));
+    }
+
+    strong { color: var(--ink); }
+    a { color: var(--navy); }
 
     @page {
       size: A4;
@@ -290,7 +377,7 @@
     }
 
     @media print {
-      body { background: white; }
+      body { background: white; padding: 0; }
       .page {
         margin: 0;
         box-shadow: none;
@@ -298,6 +385,7 @@
     }
 
     @media (max-width: 900px) {
+      body { padding: 0; }
       .page {
         width: 100%;
         min-height: auto;
@@ -318,7 +406,10 @@
   <section class="page cover">
     <div>
       <div class="brand">
-        <img class="brand-logo" src="logo.png" alt="CredLens AI logo" />
+        <div class="brand-mark" aria-label="CredLens AI logo">
+          <img src="icon.png" alt="CredLens AI logo" class="brand-icon" />
+          <span>CredLens AI</span>
+        </div>
       </div>
 
       <div class="cover-main">
